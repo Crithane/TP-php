@@ -48,7 +48,22 @@ if (isset($_POST['submit'])) {
     if (array_filter($errors)) {
         echo 'error';
     } else {
-        echo 'no error' . $responseData;
+        //echo 'no error' . $responseData . '</br>';
+        $phpDecode = json_decode($responseData);
+        //print_r($phpDecode);
+        echo $phpDecode->result->description;
+        //print_r($phpDecode['buildNumber']);
+        //print_r($phpDecode['timestamp']);
+        // stdClass Object ( 
+        //    [result] => stdClass Object ( 
+        //[code] => 000.200.100 
+        //[description] => successfully created checkout 
+        //)
+        //[buildNumber] => bf26cbbf467aefb66c1fc211bf3c36ae46335604@2021-02-12 03:42:28 +0000 
+        //[timestamp] => 2021-02-12 22:03:37+0000 
+        //[ndc] => 8D5728E3AA1CB62672579E64C12175BA.uat01-vm-tx04 
+        //[id] => 8D5728E3AA1CB62672579E64C12175BA.uat01-vm-tx04 )
+
     }
 }
 
