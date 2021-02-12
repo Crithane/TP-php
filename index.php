@@ -1,5 +1,7 @@
 <?php
 
+//mysql
+include('config/db_connect.php');
 
 $amount = $reference = "";
 
@@ -51,24 +53,20 @@ if (isset($_POST['submit'])) {
         //echo 'no error' . $responseData . '</br>';
         $phpDecode = json_decode($responseData);
         //print_r($phpDecode);
-        echo $phpDecode->result->description;
-        //print_r($phpDecode['buildNumber']);
-        //print_r($phpDecode['timestamp']);
-        // stdClass Object ( 
-        //    [result] => stdClass Object ( 
-        //[code] => 000.200.100 
-        //[description] => successfully created checkout 
-        //)
-        //[buildNumber] => bf26cbbf467aefb66c1fc211bf3c36ae46335604@2021-02-12 03:42:28 +0000 
-        //[timestamp] => 2021-02-12 22:03:37+0000 
-        //[ndc] => 8D5728E3AA1CB62672579E64C12175BA.uat01-vm-tx04 
-        //[id] => 8D5728E3AA1CB62672579E64C12175BA.uat01-vm-tx04 )
+        $time_stamp = $phpDecode->timestamp;
+        $amount = mysqli_real_escape_string($conn, $_POST['amount']);
+        $reference =  mysqli_real_escape_string($conn, $_POST['reference']);
+        $timestamp = mysqli_real_escape_string($conn, $time_stamp);
 
+        $sql = "INSERT INTO payments(amount,reference,timestamp) VALUES('$amount','$reference', '$timestamp')";
+
+        if (mysqli_query($conn, $sql)) {
+            header('Location: index.php');
+        } else {
+            echo 'query error:' . mysqli_error($conn);
+        }
     }
 }
-
-
-
 ?>
 
 
