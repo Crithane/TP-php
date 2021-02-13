@@ -3,11 +3,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <style type="text/css">
     .brand {
-        background: #cbb09c !important;
+        background: #c77dff !important;
     }
 
     .brand-text {
-        color: #cbb09c !important;
+        color: #7b2cbf !important;
     }
 
     form {
@@ -23,7 +23,7 @@
         <div class="container">
             <a href="index.php" class="brand-logo brand-text">Wish List</a>
             <ul id="nav-mobile" class="right hide-on-small-and-down">
-                <li><a href="orderlist.php" class="btn brand z-depth-0">Order List</a></li>
+                <li><a href="paymentHistory.php" class="btn brand z-depth-0">Payment History</a></li>
             </ul>
         </div>
     </nav>

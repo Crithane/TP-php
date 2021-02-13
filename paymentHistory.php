@@ -17,15 +17,15 @@ mysqli_close($conn);
 <?php
 include('template/header.php');
 ?>
-<h4>order list</h4>
-<div class="container">
+<div class="container grey-text">
+    <p class="center">Payment History</p>
     <div class="row">
         <?php foreach ($payments as $payment) : ?>
         <div class="col s6 md3">
             <div class="card">
                 <div class="card-content center">
                     <p><?php echo htmlspecialchars($payment['id']); ?></p>
-                    <h5>Amount: <?php echo htmlspecialchars($payment['amount']); ?></h5>
+                    <p>Amount: <?php echo htmlspecialchars($payment['amount']); ?></p>
                     <p>Reference: <?php echo htmlspecialchars($payment['reference']); ?></p>
                     <p>Date and Time: <?php echo htmlspecialchars($payment['timestamp']); ?></p>
                 </div>

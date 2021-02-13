@@ -1,68 +1,71 @@
 <?php
 
-//mysql
+//mysql connect
 include('config/db_connect.php');
 
-$amount = $reference = "";
+//set variable
+$amount = $reference = $checkoutId =  "";
+//set function
+function request($amount)
+{
+    $url = "https://test.oppwa.com/v1/checkouts";
+    $data = "entityId=8ac7a4ca759cd78501759dd759ad02df" .
+        "&amount=" . $amount .
+        "&currency=GBP" .
+        "&paymentType=DB" .
+        "&merchantTransactionId=test1234";
 
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        'Authorization:Bearer OGE4Mjk0MTc0YjdlY2IyODAxNGI5Njk5MjIwMDE1Y2N8c3k2S0pzVDg='
+    ));
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // this should be set to true in production
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $responseData = curl_exec($ch);
+    if (curl_errno($ch)) {
+        return curl_error($ch);
+    }
+    curl_close($ch);
+    return $responseData;
+}
+//error
 $errors = array('amount' => '', 'reference' => '');
 
+//if submit
 if (isset($_POST['submit'])) {
     if (empty($_POST['amount'])) {
         $errors['amount'] = 'An amount is required';
     } else {
         $amount = $_POST['amount'];
     }
-
     if (empty($_POST['reference'])) {
         $errors['reference'] = 'A reference is required';
     } else {
         $reference = $_POST['reference'];
     }
 
-    function request($amount)
-    {
-        $url = "https://test.oppwa.com/v1/checkouts";
-        $data = "entityId=8a8294174b7ecb28014b9699220015ca" .
-            "&amount=" . $amount .
-            "&currency=GBP" .
-            "&paymentType=DB";
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Authorization:Bearer OGE4Mjk0MTc0YjdlY2IyODAxNGI5Njk5MjIwMDE1Y2N8c3k2S0pzVDg='
-        ));
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // this should be set to true in production
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $responseData = curl_exec($ch);
-        if (curl_errno($ch)) {
-            return curl_error($ch);
-        }
-        curl_close($ch);
-        return $responseData;
-    }
-
-    $responseData = request($amount);
-
     if (array_filter($errors)) {
-        echo 'error';
+        echo 'There is error in the form';
     } else {
-        //echo 'no error' . $responseData . '</br>';
+        $responseData = request($amount);
         $phpDecode = json_decode($responseData);
-        //print_r($phpDecode);
-        $time_stamp = $phpDecode->timestamp;
+
+        $timeStamp = $phpDecode->timestamp;
+        $timeStampReplace = str_replace("+0000", "", $timeStamp);
+        $checkoutId = $phpDecode->id;
+
+        //mysql
         $amount = mysqli_real_escape_string($conn, $_POST['amount']);
         $reference =  mysqli_real_escape_string($conn, $_POST['reference']);
-        $timestamp = mysqli_real_escape_string($conn, $time_stamp);
+        $timestamp = mysqli_real_escape_string($conn, $timeStampReplace);
+        //don't have to save checkout id //delete later
+        $checkout_id = mysqli_real_escape_string($conn, $checkoutId);
+        $sql = "INSERT INTO payments(amount,reference,timestamp,checkout_id) VALUES('$amount','$reference', '$timestamp','$checkout_id')";
 
-        $sql = "INSERT INTO payments(amount,reference,timestamp) VALUES('$amount','$reference', '$timestamp')";
-
-        if (mysqli_query($conn, $sql)) {
-            header('Location: index.php');
-        } else {
+        if (!mysqli_query($conn, $sql)) {
             echo 'query error:' . mysqli_error($conn);
         }
     }
@@ -96,12 +99,28 @@ include('template/header.php');
         <div class="center">
             <input type="submit" name="submit" value="submit" class="btn brand z-depth-0">
         </div>
-
     </form>
+
+    <?php
+    //The form, only displayed on condition
+    if (strlen($reference) > 0) : ?>
+    <form action="result.php" class="paymentWidgets" data-brands="VISA MASTER AMEX"></form>
+    <?php endif; ?>
+    <?php
+    session_start();
+    $_SESSION['checkout_id'] = $checkoutId;
+    ?>
+    <script>
+    var wpwlOptions = {
+        style: "card"
+    }
+    </script>
+    <script src="https://test.oppwa.com/v1/paymentWidgets.js?checkoutId=<?php echo $checkoutId ?>"></script>
+
 </section>
 
-<?php
 
+<?php
 include('template/footer.php')
 ?>
 
