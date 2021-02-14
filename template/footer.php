@@ -1,4 +1,4 @@
 <footer class="section">
-    <div class="center grey-text">Copyright 2021 Serin Jeon<div>
+    <div class="center grey-text">&copy; 2021. Serin Jeon - all rights reserved<div>
 </footer>
 </body>

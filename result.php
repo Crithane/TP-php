@@ -54,10 +54,10 @@ if($resultCode == "000.100.110"){
 include('template/header.php');
 ?>
 
-<div class="container grey-text">
+<div class="container center">
     <h5 class="center">Payment Result</h5>
     <?php if($resultCode == "000.100.110"):?>
-        <p>Your payment has been successfully made.</P>
+        <h6>Your payment has been successfully made.</h6>
     <?php endif; ?>
     <p>Result Code: <?php echo htmlspecialchars($resultCode) ?>
     <p>Result: <?php echo htmlspecialchars($resultDescription); ?>
