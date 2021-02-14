@@ -1,8 +1,4 @@
 <?php
-
-//mysql connect
-include('config/db_connect.php');
-
 //set variable
 $amount = $reference = $checkoutId =  "";
 //set function
@@ -52,22 +48,7 @@ if (isset($_POST['submit'])) {
     } else {
         $responseData = request($amount);
         $phpDecode = json_decode($responseData);
-
-        $timeStamp = $phpDecode->timestamp;
-        $timeStampReplace = str_replace("+0000", "", $timeStamp);
         $checkoutId = $phpDecode->id;
-
-        //mysql
-        $amount = mysqli_real_escape_string($conn, $_POST['amount']);
-        $reference =  mysqli_real_escape_string($conn, $_POST['reference']);
-        $timestamp = mysqli_real_escape_string($conn, $timeStampReplace);
-        //don't have to save checkout id //delete later
-        $checkout_id = mysqli_real_escape_string($conn, $checkoutId);
-        $sql = "INSERT INTO payments(amount,reference,timestamp,checkout_id) VALUES('$amount','$reference', '$timestamp','$checkout_id')";
-
-        if (!mysqli_query($conn, $sql)) {
-            echo 'query error:' . mysqli_error($conn);
-        }
     }
 }
 ?>
@@ -80,7 +61,7 @@ include('template/header.php');
 ?>
 
 <section class="container grey-text">
-    <h4 class="center">Add a wish list that you want someone to pay!</h4>
+    <h4 class="center">Buy an item that you want 🤗!</h4>
     <form class="white" action="index.php" method="POST">
         <label>Amount(GBP):</label>
         <input type="text" name="amount" value="<?php echo htmlspecialchars($amount) ?>">
@@ -104,19 +85,18 @@ include('template/header.php');
     <?php
     //The form, only displayed on condition
     if (strlen($reference) > 0) : ?>
-    <form action="result.php" class="paymentWidgets" data-brands="VISA MASTER AMEX"></form>
+        <form action="result.php" class="paymentWidgets" data-brands="VISA MASTER AMEX"></form>
     <?php endif; ?>
     <?php
-    session_start();
-    $_SESSION['checkout_id'] = $checkoutId;
+        session_start();
+        $_SESSION['checkout_id'] = $checkoutId;
+        $_SESSION['amount'] = $amount;
+        $_SESSION['reference'] = $reference;
     ?>
     <script>
-    var wpwlOptions = {
-        style: "card"
-    }
+        var wpwlOptions = {style: "card"}
     </script>
     <script src="https://test.oppwa.com/v1/paymentWidgets.js?checkoutId=<?php echo $checkoutId ?>"></script>
-
 </section>
 
 

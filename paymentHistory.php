@@ -1,7 +1,7 @@
 <?php
 include('config/db_connect.php');
 
-$sql = 'SELECT amount, reference, timestamp, id FROM payments ORDER BY timestamp';
+$sql = 'SELECT amount, reference, timestamp, id FROM payments ORDER BY id';
 
 $result = mysqli_query($conn, $sql);
 
@@ -18,7 +18,7 @@ mysqli_close($conn);
 include('template/header.php');
 ?>
 <div class="container grey-text">
-    <p class="center">Payment History</p>
+    <h5 class="center">Payment History</h5>
     <div class="row">
         <?php foreach ($payments as $payment) : ?>
         <div class="col s6 md3">
