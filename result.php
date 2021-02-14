@@ -1,7 +1,6 @@
 <?php
 session_start();
 $checkoutId = $_SESSION['checkout_id'];
-echo $checkoutId;
 
 function request($checkoutId)
 {
@@ -11,7 +10,7 @@ function request($checkoutId)
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        'Authorization:Bearer OGE4Mjk0MTc0YjdlY2IyODAxNGI5Njk5MjIwMDE1Y2N8c3k2S0pzVDg='
+        'Authorization:Bearer OGFjN2E0Y2E3NTljZDc4NTAxNzU5ZGQ3NThhYjAyZGR8NTNybThiSmpxWQ=='
     ));
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true); // this should be set to true in production
@@ -24,6 +23,10 @@ function request($checkoutId)
     return $responseData;
 }
 $responseData = request($checkoutId);
+
+$phpDecode = json_decode($responseData);
+$resultCode = $phpDecode->result->code;
+$resultDescription = $phpDecode->result->description;
 ?>
 
 
@@ -33,15 +36,12 @@ $responseData = request($checkoutId);
 <?php
 include('template/header.php');
 ?>
-<p>
-    <?php
-    $phpDecode = json_decode($responseData);
-    $resultCode = $phpDecode->result->code;
-    $resultDescription = $phpDecode->result->description;
 
-    echo $resultCode . '<br/>' . $resultDescription;
-    ?>
-</p>
+<div class="container grey-text">
+<h5 class="center">Payment Result</h5>
+    <p>Result Code : <?php echo htmlspecialchars($resultCode) ?>
+    <p>Result : <?php echo htmlspecialchars($resultDescription); ?>
+</div>
 <?php
 include('template/footer.php')
 ?>
