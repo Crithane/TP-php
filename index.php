@@ -5,11 +5,15 @@ $amount = $reference = $checkoutId =  "";
 function request($amount)
 {
     $url = "https://test.oppwa.com/v1/checkouts";
-    $data = "entityId=8ac7a4ca759cd78501759dd759ad02df" .
-        "&amount=" . $amount .
-        "&currency=GBP" .
-        "&paymentType=DB" .
-        "&merchantTransactionId=test1234";
+
+    $data = [
+        'entityId' => '8ac7a4ca759cd78501759dd759ad02df',
+        'amount' => $amount,
+        'currency' => 'GBP',
+        'paymentType' => 'DB',
+        'merchantTransactionId' => 'test1234'
+    ];
+
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -17,7 +21,7 @@ function request($amount)
         'Authorization:Bearer OGFjN2E0Y2E3NTljZDc4NTAxNzU5ZGQ3NThhYjAyZGR8NTNybThiSmpxWQ=='
     ));
     curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // this should be set to true in production
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     $responseData = curl_exec($ch);
@@ -87,12 +91,6 @@ include('template/header.php');
     if (strlen($reference) > 0) : ?>
         <form action="result.php" class="paymentWidgets" data-brands="VISA MASTER AMEX"></form>
     <?php endif; ?>
-    <?php
-        session_start();
-        $_SESSION['checkout_id'] = $checkoutId;
-        $_SESSION['amount'] = $amount;
-        $_SESSION['reference'] = $reference;
-    ?>
     <script>
         var wpwlOptions = {style: "card"}
     </script>

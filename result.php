@@ -1,9 +1,6 @@
 <?php
 //pass variable through session
-session_start();
-$checkoutId = $_SESSION['checkout_id'];
-$amount = $_SESSION['amount'];
-$reference = $_SESSION['reference'];
+$checkoutId = $_GET['id'];
 
 //connect mysql
 include('config/db_connect.php');
@@ -37,10 +34,12 @@ $timeStamp = $phpDecode->timestamp;
 $timeStampReplace = str_replace("+0000", "", $timeStamp);
 
 if($resultCode == "000.100.110"){
-    $amount_db = mysqli_real_escape_string($conn, $amount);
-    $reference_db =  mysqli_real_escape_string($conn, $reference);
+    $amount_db = mysqli_real_escape_string($conn, $phpDecode->amount);
+    $reference_db =  mysqli_real_escape_string($conn, $phpDecode->merchantTransactionId);
     $timestamp_db = mysqli_real_escape_string($conn, $timeStampReplace);
-    $sql = "INSERT INTO payments(amount,reference,timestamp) VALUES('$amount_db','$reference_db','$timestamp_db')";
+    $checkout_id = mysqli_real_escape_string($conn, $checkoutId);
+
+    $sql = "INSERT INTO payments(amount,reference,timestamp,checkout_id) VALUES('$amount_db','$reference_db','$timestamp_db', '$checkoutId')";
     
     if (!mysqli_query($conn, $sql)) {
         echo 'query error:' . mysqli_error($conn);
